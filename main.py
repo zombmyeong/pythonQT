@@ -4,11 +4,11 @@ import sys
 import socket
 import tool
 
-s = socket.socket()
-host = socket.gethostname()
-port = 65888
-s.bind((host,port))
-s.liten(10)
+HOST = ''
+PORT = 57000
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((HOST,PORT))
+s.listen(10)
 client = []
 
 def main() :

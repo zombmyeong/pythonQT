@@ -14,13 +14,17 @@ client = []
 def main() :
     while True :
         c, addr = s.accept()
-        t = tool.clientMangement(c, addr)
+        t = tool.clientManagement(c, addr)
         client.append(t);
         t.start()
-        print 'connected', addr
+        print 'connected : ', addr
+        input = raw_input()
+        if input == 'quit' :
+            break
 
     for c in client :
         del c
+    s.close()
 
 if __name__ == '__main__' :
     main()

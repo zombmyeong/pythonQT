@@ -8,12 +8,18 @@ class clientManagement(threading.Thread) :
         threading.Thread.__init__(self)
         self.c = c
         self.addr = addr
-        self.c.send('thanx for connecting')
+        self.input = ''
 
     def run(self) :
-        pass
-
+        self.c.send('thanx for connecting\n')
+        while True :
+            self.input = self.c.recv(1024)
+            print self.input
+            if float(self.input) > 300 :
+                break
+    
     def __del__(self) :
-        c.send('good bye')
-        c.close()
+        print 'close : ', self.addr
+        self.c.send('good bye\n')
+        self.c.close()
 

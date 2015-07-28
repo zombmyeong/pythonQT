@@ -65,18 +65,16 @@ class clientManagement(threading.Thread) :
         self.connection = mysql.connect(user = name, password = pswd, database='myapp')
         self.cursor = self.connection.cursor()
 
-        self.c.send(protocol.CLIENT_SEND_START+'\n')
         while True :
+            self.c.send(protocol.CLIENT_SEND_REQUEST+'\n')
             self.input = ''
             self.input = self.c.recv(1024)
             if self.input != '' and self.input is not None :
-                if self.input == protocol.CLIENT_RECV_DISCONNECT :
-                    self.c.send(protocol.CLIENT_CLOSE+'\n')
+                if self.input == protocol.CLIENT_DISCONNECT_REQUEST :
+                    self.c.send(protocol.CLIENT_DISCONNECT+'\n')
                     break
                 else :
                     cursor.excute("INSERT INTO xxxxx VALUES (%d, %d)",( xxxx ,self.input))
-                    self.c.send(protocol.CLIENT_RECV_SUCCESS+'\n') 
-
 
     def __del__(self) :
         print 'close : ', self.addr

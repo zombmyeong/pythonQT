@@ -3,7 +3,7 @@ import socket
 import threading
 import time
 import protocol
-import mysql.connector as mariadb
+import MySQLdb.connector as mariadb
 
 lock = threading.Lock()
 

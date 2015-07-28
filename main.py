@@ -1,36 +1,29 @@
 #_*_coding:utf-8_*_
 
 import sys
-import socket
+import time
 import tool
 
-HOST = ''
-PORT = 57000
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((HOST,PORT))
-s.listen(10)
-s.settimeout(1)
-client = []
+server = tool.server('', 57000, 10)
+
+acceptThread = tool.serverAccept(server)
+removeThread = tool.serverRemove(server)
 
 def main() :
     try:
         while True :
-            c = None
-            addr = None
+            instruction = raw_input('>>>')
+            if instruction != '' and instruction != None :
+                if instruction == 'quit' :
+                    break
+            time.sleep(1)
 
-            c, addr = s.accept()
-            if c != None and addr != None :
-                t = tool.clientManagement(c, addr)
-                client.append(t);
-                t.start()
-                print 'connected : ', addr
-
-            for c in client :
-                if not c.isAlive() :
-                    del c
     finally:
-        s.shutdown(SHUT_RDWR)
-        s.close()
+        server.status = False
+        acceptThread.join()
+        removeThread.join()
+        server.s.close()
 
 if __name__ == '__main__' :
     main()
+    print 'end'

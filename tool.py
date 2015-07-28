@@ -3,7 +3,7 @@ import socket
 import threading
 import time
 import protocol
-import MySQLdb.connector as mariadb
+import MySQLdb as mysql
 
 lock = threading.Lock()
 
@@ -62,8 +62,8 @@ class clientManagement(threading.Thread) :
         name, pswd, info = self.input.split(',')
 
         #sql
-        self.mariadb_connection = mariadb.connect(user = name, password = pswd, database='myapp')
-        self.cursor = self.mariadb_connection.cursor()
+        self.connection = mysql.connect(user = name, password = pswd, database='myapp')
+        self.cursor = self.connection.cursor()
 
         self.c.send(protocol.CLIENT_SEND_START+'\n')
         while True :

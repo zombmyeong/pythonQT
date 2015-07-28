@@ -1,9 +1,9 @@
 #_*_coding:utf-8_*_
-
 import socket
 import threading
 import time
 import protocol
+import mysql.connector as mariadb
 
 lock = threading.Lock()
 
@@ -49,32 +49,21 @@ class serverRemove(threading.Thread) :
                         del c
             time.sleep(5)
 
-#client management
-"""
-name, data info
-number 8000 ~
-connect 8000
-close 8001
-disconnection or somthing 8003
-recv disconnection 8004
-
-send start 8010
-recv success 8011
-"""
-
 class clientManagement(threading.Thread) :
 
     def __init__(self, c, addr) :
         threading.Thread.__init__(self)
         self.c = c
         self.addr = addr
-        self.input = ''
 
     def run(self) :
         self.c.send(protocol.CLIENT_CONNECT+'\n')
         self.input = self.c.recv(1024)
-        name, info = self.input.split(',')
+        name, pswd, info = self.input.split(',')
+
         #sql
+        self.mariadb_connection = mariadb.connect(user = name, password = pswd, database='myapp')
+        self.cursor = self.mariadb_connection.cursor()
 
         self.c.send(protocol.CLIENT_SEND_START+'\n')
         while True :
@@ -85,6 +74,7 @@ class clientManagement(threading.Thread) :
                     self.c.send(protocol.CLIENT_CLOSE+'\n')
                     break
                 else :
+                    cursor.excute("INSERT INTO xxxxx VALUES (%d, %d)",( xxxx ,self.input))
                     self.c.send(protocol.CLIENT_RECV_SUCCESS+'\n') 
 
 

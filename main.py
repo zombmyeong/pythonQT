@@ -9,22 +9,28 @@ PORT = 57000
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST,PORT))
 s.listen(10)
+s.settimeout(1)
 client = []
 
 def main() :
-    while True :
-        c, addr = s.accept()
-        t = tool.clientManagement(c, addr)
-        client.append(t);
-        t.start()
-        print 'connected : ', addr
-        input = raw_input()
-        if input == 'quit' :
-            break
+    try:
+        while True :
+            c = None
+            addr = None
 
-    for c in client :
-        del c
-    s.close()
+            c, addr = s.accept()
+            if c != None and addr != None :
+                t = tool.clientManagement(c, addr)
+                client.append(t);
+                t.start()
+                print 'connected : ', addr
+
+            for c in client :
+                if not c.isAlive() :
+                    del c
+    finally:
+        s.shutdown(SHUT_RDWR)
+        s.close()
 
 if __name__ == '__main__' :
     main()

@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-import protocol
+from protocol import *
 import MySQLdb as mysql
 
 lock = threading.Lock()
@@ -59,12 +59,14 @@ class clientManagement(threading.Thread) :
     def run(self) :
         self.c.send(protocol.CLIENT_CONNECT+'\n')
         self.input = self.c.recv(1024)
-        name, pswd, info = self.input.split(',')
+	data = None
+        data = self.input.split(',')
+	print self.input, ' / ', data
 
         #sql
-        self.connection = mysql.connect(user = name, password = pswd, database='myapp')
-        self.cursor = self.connection.cursor()
-
+        self.db = mysql.connect('localhost', data[0], data[1], 'testtable')
+        self.cursor = self.db.cursor()
+        self.cursor.execute("USE testtable;")
         self.c.send(protocol.CLIENT_SEND_START+'\n')
         while True :
             self.input = ''
@@ -74,8 +76,10 @@ class clientManagement(threading.Thread) :
                     self.c.send(protocol.CLIENT_CLOSE+'\n')
                     break
                 else :
-                    cursor.excute("INSERT INTO xxxxx VALUES (%d, %d)",( xxxx ,self.input))
-                    self.c.send(protocol.CLIENT_RECV_SUCCESS+'\n') 
+		    print 'insert data db'
+                    self.cursor.execute("INSERT INTO result VALUES (curdate(), %s);",(int(float(self.input)),))
+                    self.db.commit()
+		    self.c.send(protocol.CLIENT_SEND_START+'\n') 
 
 
     def __del__(self) :
